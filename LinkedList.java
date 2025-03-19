@@ -13,6 +13,8 @@ public class LinkedList<E> implements List<E>
 {
     // First object in List
     private LinkNode<E> head;
+    // Last object in List
+    private LinkNode<E> tail;
     // Size of the List
     private int size;
 
@@ -24,6 +26,7 @@ public class LinkedList<E> implements List<E>
     { 
         size = 0; 
         head = null;
+        tail = null;
     }
 
     /**
@@ -90,6 +93,8 @@ public class LinkedList<E> implements List<E>
     {
         head = createNode(data, head);
         size++;
+        if (tail == null)
+            tail = head;
     }
 
     /**
@@ -101,12 +106,9 @@ public class LinkedList<E> implements List<E>
     {
         LinkNode<E> newNode = createNode(data);
         if (isEmpty())
-        {
             head = newNode;
-        } else {
-            LinkNode<E> lastNode = getNodeAtIndex(size-1);
-            lastNode.next = newNode;
-        }
+        
+        tail = newNode;
         size++;
     }
 
@@ -144,8 +146,10 @@ public class LinkedList<E> implements List<E>
      */
     public E getLast()
     {
-        LinkNode<E> currentNode = getNodeAtIndex(size-1);
-        return currentNode.data;
+        if (isEmpty())
+            throw new NoSuchElementException();
+
+        return tail.data;
     }
 
     /**
@@ -320,6 +324,9 @@ public class LinkedList<E> implements List<E>
         if (index == 0)
             return head;
 
+        if (index-1 == size)
+            return tail;
+
         LinkNode<E> currentNode = head;
 
         for (int i = 0; i < index; i++)
@@ -340,10 +347,16 @@ public class LinkedList<E> implements List<E>
     {
         if (isEmpty())
             throw new NoSuchElementException();
+        
         LinkNode<E> temp = head;
         head = head.next;
         temp.next = null;
         size--;
+
+        // If the head was also the tail, change tail value.
+        if (temp == tail)
+            tail = temp
+
         return temp;
     }
 
@@ -367,5 +380,10 @@ public class LinkedList<E> implements List<E>
         previousNode.next = node.next;
         node.next = null;
         size--;
+
+        // If the node was the tail, change tail value.
+        if (node == tail)
+            tail = previousNode
+        
     }
 }
