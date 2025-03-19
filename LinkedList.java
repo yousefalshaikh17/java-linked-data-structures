@@ -1,12 +1,13 @@
-import java.util.EmptyStackException;
 import java.lang.IndexOutOfBoundsException;
 import java.util.NoSuchElementException;
 
 /**
  * List object for storing objects of a certain type in.
  *
+ * Originally created on 01/12/2021.
+ * 
  * @author Yousef AlShaikh
- * @version 01/12/2021
+ * @version 19/03/2025
  */
 public class LinkedList<E> implements List<E>
 {
@@ -14,31 +15,31 @@ public class LinkedList<E> implements List<E>
     private LinkNode<E> head;
     // Size of the List
     private int size;
-    
+
     /**
-     * Constructor for objects of class LinkedList
+     * Constructor for objects of class LinkedList.
+     * Initializes the list to be empty.
      */
     public LinkedList()
     { 
         size = 0; 
+        head = null;
     }
 
     /**
-     * Checks to see if the stack is empty
+     * Checks to see if the list is empty.
      * 
-     * @return true if list is empty, otherwise return false.
-     * 
+     * @return true if list is empty, otherwise false.
      */
     public boolean isEmpty()
     {
         return head == null;
     }
-    
+
     /**
      * Returns the number of objects in the list.
      * 
-     * @return the number of objects in the list
-     * 
+     * @return the number of objects in the list.
      */
     public int size()
     {
@@ -49,81 +50,66 @@ public class LinkedList<E> implements List<E>
      * Adds an object at the end of the list.
      * 
      * @param data object to be inserted.
-     * 
      */
     public void add(E data)
     {
         addLast(data);
     }
-    
+
     /**
      * Adds an object at the specified index.
      * 
      * @param index index of the position for object to be inserted.
      * @param data object to be inserted.
      * 
+     * @throws IndexOutOfBoundsException if the index is out of bounds.
      */
     public void add(int index, E data)
     {
-        if (index == size)
-        {
-            addLast(data);
-        }
-        else if (index == 0)
-        {
-            addFirst(data);
-        }
-        else if (index < size)
-        {
-            LinkNode<E> tempNode = createNode(data);
-            LinkNode<E> currentNode = head;
-            for (int i = 0; i < index-1; i++)
-            {
-                currentNode = currentNode.next;
-            }
-            currentNode.next = createNode(data, currentNode.next);
-            size++;
-        } else
-        {
+        if (index > size || index < 0)
             throw new IndexOutOfBoundsException();
+
+        if (index == size) {
+            addLast(data);  // Adding to the end of the list
+        } else if (index == 0) {
+            addFirst(data);  // Adding to the beginning of the list
+        } else {
+            LinkNode<E> currentNode = getNodeAtIndex(index - 1);
+            LinkNode<E> newNode = createNode(data, currentNode.next);
+            currentNode.next = newNode;
+            size++;
         }
     }
-    
+
     /**
      * Adds an object to the start of the list.
      * 
-     *  @param data object to be inserted.
-     *  
+     * @param data object to be inserted.
      */
     public void addFirst(E data)
     {
         head = createNode(data, head);
         size++;
     }
-    
+
     /**
      * Adds an object at the end of the list.
      * 
      * @param data object to be inserted.
-     * 
      */
     public void addLast(E data)
     {
-        LinkNode<E> tempNode = createNode(data);
+        LinkNode<E> newNode = createNode(data);
         if (isEmpty())
         {
-            head = tempNode;
+            head = newNode;
         } else {
-            LinkNode<E> currentNode = head;
-            while (currentNode.next!=null)
-            {
-                currentNode = currentNode.next;
-            }
-            currentNode.next = tempNode;
+            LinkNode<E> lastNode = getNodeAtIndex(size-1);
+            lastNode.next = newNode;
         }
         size++;
     }
-    
+
     /**
      * Gets an object of specified index in the list.
      * 
@@ -132,202 +118,162 @@ public class LinkedList<E> implements List<E>
      */
     public E get(int index)
     {
-        LinkNode<E> currentNode = head;
-        if (isEmpty())
-        {
-            throw new IndexOutOfBoundsException();
-        }
-        else if (index == 0)
-        {
-            return getFirst();
-        }
-        for (int i = 0; i < index; i++)
-        {
-            currentNode = currentNode.next;
-        }
+        LinkNode<E> currentNode = getNodeAtIndex(index);
         return currentNode.data;
     }
-    
+
     /**
      * Returns the object at the start of the list.
      * 
      * @return the object at the start of the list.
-     * 
+     * @throws NoSuchElementException if the linked list is empty.
      */
     public E getFirst()
     {
         if (isEmpty())
-        {
             throw new NoSuchElementException();
-        }
+
         return head.data;
     }
-    
+
     /**
      * Returns the object at the end of the list.
      * 
      * @return the object at the end of the list.
-     * 
+     * @throws IndexOutOfBoundsException if the index is out of bounds.
      */
     public E getLast()
     {
-        if (isEmpty())
-        {
-            throw new NoSuchElementException();
-        }
-        LinkNode<E> currentNode = head;
-        while (currentNode.next!=null)
-        {
-            currentNode = currentNode.next;
-        }
-        
+        LinkNode<E> currentNode = getNodeAtIndex(size-1);
         return currentNode.data;
     }
-    
+
     /**
      * Returns the index of the object specified.
      * 
      * @param data object to retrieve the index of.
      * @return the index of the object.
-     * 
      */
     public int indexOf(E data)
     {
         if (isEmpty())
-        {
             return -1;
-        }
+
         LinkNode<E> currentNode = head;
         int count = 0;
-        while ( currentNode.next!=null && currentNode.data != data )
+        while (currentNode != null)
         {
+            if (data == null ? currentNode.data == null : data.equals(currentNode.data))
+                return count;
+
             currentNode = currentNode.next;
             count++;
         }
-        if (currentNode.data == data)
-        {
-            return count;
-        }
         return -1;
     }
-    
+
     /**
      * Removes the first object on the list.
      * 
-     * @return the object being deleted.
+     * @return the object being removed from the list.
      */
     public E remove()
     {
         return removeFirst();
     }
-    
+
     /**
      * Removes the object of the specified index and returns it.
      * 
      * @param index the index of the object.
-     * @return the object being deleted.
+     * @return the object being removed from the list.
      */
     public E remove(int index)
     {
+        if (isEmpty())
+            throw new NoSuchElementException();
+
         if (index == 0)
-        {
             return removeFirst();
-        }
-        else if (index == size-1)
-        {
-            return removeLast();
-        }
-        else if (index < size)
-        {
-            LinkNode<E> currentNode = head;
-            for (int i = 0; i < index-1; i++)
-            {
-                currentNode = currentNode.next;
-            }
-            LinkNode<E> tempNode = currentNode.next;
-            currentNode.next = currentNode.next.next;
-            size--;
-            return tempNode.data;
-        } else
-        {
+
+        if (index >= size || index < 0)
             throw new IndexOutOfBoundsException();
-        }
+
+        // Get target node and node prior to it
+        LinkNode<E> previousNode = getNodeAtIndex(index-1);
+        LinkNode<E> targetNode = previousNode.next;
+        removeNode(targetNode, previousNode);
+
+        return targetNode.data;
     }
 
     /**
      * Removes the object provided from the list if present.
      * 
-     * @param the object being deleted from the list.
-     * @return true if the list contained the specified object and false if not.
+     * @param data the object being removed from the list.
+     * @return true if the list contained the specified object, false if not.
      */
     public boolean remove(Object data)
     {
         if (isEmpty())
-        {
             return false;
-        }
+
+        LinkNode<E> previousNode = null;
         LinkNode<E> currentNode = head;
-        while ( currentNode.next!=null && currentNode.data != data )
+        while (currentNode != null)
         {
+            // Check if the values match
+            if (data == null ? currentNode.data == null : data.equals(currentNode.data)) 
+                break;
+
+            previousNode = currentNode;
             currentNode = currentNode.next;
         }
-        if (currentNode.data == data)
-        {
-            return true;
-        }
-        return false;
+
+        if (currentNode == null)
+            return false;
+
+        removeNode(currentNode, previousNode);
+
+        return true;
     }
-    
+
     /**
      * Removes the first object on the list.
      * 
-     * @return the object being deleted.
+     * @return the object being removed from the list.
+     * @throws NoSuchElementException if the linked list is empty.
      */
     public E removeFirst()
     {
-        if (isEmpty())
-        {
-            throw new NoSuchElementException();
-        }
-        LinkNode<E> temp = head;
-        head = head.next;
-        size--;
-        return temp.data;
+        LinkNode<E> node = removeFirstNode();
+        return node.data;
     }
-    
+
     /**
      * Removes the last object on the list.
      * 
-     * @return the object being deleted.
+     * @return the object being remvoed from the list.
+     * @throws NoSuchElementException if the linked list is empty.
      */
     public E removeLast()
-    {
-        if (isEmpty())
-        {
-            throw new NoSuchElementException();
-        }
-        LinkNode<E> currentNode = head;
-        for (int i = 0; i < size-2; i++)
-        {
-            currentNode = currentNode.next;
-        }
-        LinkNode<E> tempNode = currentNode.next;
-        currentNode.next = null;
-        size--;
-        return tempNode.data;
+    {        
+        if (size == 1)
+            return removeFirst();
+
+        return remove(size-1);
     }
-    
+
     /**
      * Returns an array containing all elements in the list from first to last.
      * 
      * @return array containing all the elements in this list.
-     * 
      */
     public Object[] toArray()
     {
         Object[] array = new Object[size];
         LinkNode<E> currentNode = head;
-        
+
         for (int i = 0; i < size; i++)
         {
             array[i] = currentNode.data;
@@ -335,7 +281,7 @@ public class LinkedList<E> implements List<E>
         }
         return array;
     }
-    
+
     /**
      * Method to create a node and return it.
      * 
@@ -346,7 +292,7 @@ public class LinkedList<E> implements List<E>
     {
         return new LinkNode<E>(data);
     }
-    
+
     /**
      * Method to create a node and return it.
      * 
@@ -357,5 +303,69 @@ public class LinkedList<E> implements List<E>
     private LinkNode<E> createNode(E data, LinkNode<E> nextNode)
     {
         return new LinkNode<E>(data, nextNode);
+    }
+
+    /**
+     * Retrieves node at the requested index.
+     * 
+     * @param index the index of the node.
+     * @return the node at the index.
+     * @throws IndexOutOfBoundsException if the index is out of bounds.
+     */
+    private LinkNode<E> getNodeAtIndex(int index)
+    {
+        if (size <= index || index < 0)
+            throw new IndexOutOfBoundsException();
+
+        if (index == 0)
+            return head;
+
+        LinkNode<E> currentNode = head;
+
+        for (int i = 0; i < index; i++)
+        {
+            currentNode = currentNode.next;
+        }
+
+        return currentNode;
+    }
+
+    /**
+     * Removes the first node in the list.
+     * 
+     * @return the previous head node.
+     * @throws NoSuchElementException if the list is empty.
+     */
+    private LinkNode<E> removeFirstNode()
+    {
+        if (isEmpty())
+            throw new NoSuchElementException();
+        LinkNode<E> temp = head;
+        head = head.next;
+        temp.next = null;
+        size--;
+        return temp;
+    }
+
+    /**
+     * Removes the node from the list.
+     * 
+     * @param node the node to be removed.
+     * @param previousNode the node preceding the one to be removed.
+     */
+    private void removeNode(LinkNode<E> node, LinkNode<E> previousNode)
+    {
+        if (node == head)
+        {
+            removeFirstNode();
+            return;
+        }
+
+        if (previousNode == null)
+            throw new NoSuchElementException("Previous node is null.");
+
+        previousNode.next = node.next;
+        node.next = null;
+        size--;
     }
 }
