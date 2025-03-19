@@ -1,0 +1,41 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Compile Java Files
+        run: |
+            mkdir release
+            javac -d release/ src/*.java
+
+      - name: Archive Compiled Class Files
+        run: |
+          zip -j java-linked-data-structures-${{ github.ref_name }}-binaries.zip release/*
+          ls
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            tag_name: ${{ github.ref_name }}
+            name: "Release ${{ github.ref_name }}"
+            body: "Binaries can be found"
+            draft: false
+            prerelease: false
+            files: java-linked-data-structures-${{ github.ref_name }}-binaries.zip
