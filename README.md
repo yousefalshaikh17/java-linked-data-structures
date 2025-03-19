@@ -16,7 +16,7 @@ These are the data structures implemented. These structures use custom List, Que
 - [LinkedList](#linkedlist)
 - [LinkedQueue](#linkedqueue)
 - [LinkedStack](#linkedstack)
-- [Usage & Installation](#usage-and-installation)
+- [Usage & Installation](#usage--installation)
 - [Contributing](#contributing)
 - [License](#license)
 
