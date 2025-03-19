@@ -22,12 +22,12 @@ jobs:
       - name: Compile Java Files
         run: |
             mkdir release
-            javac -d release/ src/*.java
+            javac -d bin src/main/com/linkeddatastructures/*.java
 
       - name: Archive Compiled Class Files
         run: |
-          zip -j java-linked-data-structures-${{ github.ref_name }}-binaries.zip release/*
-          ls
+          cd bin/
+          zip -r ../java-linked-data-structures-${{ github.ref_name }}-binaries.zip com/*
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
@@ -35,7 +35,7 @@ jobs:
             token: ${{ secrets.GITHUB_TOKEN }}
             tag_name: ${{ github.ref_name }}
             name: "Release ${{ github.ref_name }}"
-            body: "Binaries can be found"
-            draft: false
+            body: "Binaries can be found below!"
+            draft: true
             prerelease: false
             files: java-linked-data-structures-${{ github.ref_name }}-binaries.zip
