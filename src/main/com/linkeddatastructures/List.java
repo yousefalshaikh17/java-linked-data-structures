@@ -1,3 +1,4 @@
+package com.linkeddatastructures;
 
 /**
  * An interface that allows multiple objects to be stored in one variable/object.

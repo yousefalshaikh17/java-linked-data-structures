@@ -1,3 +1,5 @@
+package com.linkeddatastructures;
+
 /**
  * An object that uses LinkedList to represent a Queue.
  *

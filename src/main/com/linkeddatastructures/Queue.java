@@ -1,3 +1,4 @@
+package com.linkeddatastructures;
 
 /**
  * Queue interface for using First-In-First-Out.

@@ -1,3 +1,4 @@
+package com.linkeddatastructures;
 
 /**
  * A node containing data and the reference for the node after it.
