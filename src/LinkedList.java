@@ -355,7 +355,7 @@ public class LinkedList<E> implements List<E>
 
         // If the head was also the tail, change tail value.
         if (temp == tail)
-            tail = temp
+            tail = temp;
 
         return temp;
     }
@@ -383,7 +383,7 @@ public class LinkedList<E> implements List<E>
 
         // If the node was the tail, change tail value.
         if (node == tail)
-            tail = previousNode
+            tail = previousNode;
         
     }
 }
